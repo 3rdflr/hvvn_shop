@@ -9,6 +9,7 @@ function LoginForm() {
   const next = sp.get("next") ?? "/admin";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -54,17 +55,26 @@ function LoginForm() {
         </label>
         <label className="block">
           <span className="label">비밀번호</span>
-          <input
-            className="input"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            autoCapitalize="none"
-            autoCorrect="off"
-            spellCheck={false}
-          />
+          <div className="relative">
+            <input
+              className="input pr-12"
+              type={showPw ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPw((v) => !v)}
+              className="absolute right-0 bottom-2 text-[11px] tracking-widest2 uppercase text-muted hover:text-chrome transition"
+            >
+              {showPw ? "Hide" : "Show"}
+            </button>
+          </div>
         </label>
         {err && <div className="text-sm text-accent">{err}</div>}
         <button className="btn w-full" disabled={loading}>
