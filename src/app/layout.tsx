@@ -5,7 +5,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { ConsoleSignature } from "@/components/layouts/console-signature";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-const ogImage = `${siteUrl}/images/hvving-vertical.png`;
+const ogImage = `${siteUrl}/images/hvvn_header.png`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
