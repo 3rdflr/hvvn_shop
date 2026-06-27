@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 export const productImageSchema = z.object({
-  url: z.string().url(),
+  // Accept both absolute (uploaded) and relative (/images/...) paths.
+  url: z.string().min(1),
   alt: z.string().nullable().optional(),
   position: z.number().int().nonnegative(),
 });

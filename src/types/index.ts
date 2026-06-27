@@ -117,6 +117,7 @@ export type Settings = {
   about_html: string | null;
   instagram_url: string | null;
   contact_email: string | null;
+  bg_youtube_url: string | null;
 };
 
 export type CartLine = {

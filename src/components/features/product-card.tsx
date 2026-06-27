@@ -15,7 +15,7 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
       className="group flex flex-col items-center text-center"
     >
       <div
-        className="tilt relative w-full max-w-[320px] aspect-square bg-velvetGlow/20 overflow-hidden"
+        className="tilt relative w-full max-w-[320px] aspect-square overflow-hidden"
         style={{ ["--tilt" as string]: `${tilt}deg` }}
       >
         {product.thumbnail_url && (

@@ -13,6 +13,7 @@ const Schema = z.object({
   shipping_fee_remote: z.number().int().nonnegative(),
   instagram_url: z.string().nullable().optional(),
   contact_email: z.string().nullable().optional(),
+  bg_youtube_url: z.string().nullable().optional(),
 });
 
 export async function PATCH(req: Request) {

@@ -4,8 +4,24 @@ import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ConsoleSignature } from "@/components/layouts/console-signature";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-const ogImage = `${siteUrl}/images/hvvn_header.png`;
+// Resolve the public site URL. On Vercel, NEXT_PUBLIC_SITE_URL may be unset —
+// fall back to the Vercel-provided domain so OG/Twitter images don't point at
+// localhost (which is why share previews showed no image).
+function resolveSiteUrl(): string {
+  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  const vercel =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  if (vercel) return `https://${vercel}`;
+  return "http://localhost:3000";
+}
+
+const siteUrl = resolveSiteUrl();
+const ogImage = {
+  url: `${siteUrl}/images/hvvn_header.png`,
+  width: 1400,
+  height: 990,
+  alt: "Debone — from hvvn",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -25,7 +41,8 @@ export const metadata: Metadata = {
     description: "from hvvn",
     type: "website",
     siteName: "Debone",
-    images: [{ url: ogImage, alt: "Debone — from hvvn" }],
+    url: siteUrl,
+    images: [ogImage],
   },
   twitter: {
     card: "summary_large_image",

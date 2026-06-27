@@ -1,34 +1,66 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { getPublicSettings } from "@/lib/api/storefront";
+
+/** Extract a YouTube video id from common URL shapes. */
+function youtubeId(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const m = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/
+  );
+  return m?.[1] ?? null;
+}
 
 /**
- * Fixed, scroll-independent background decoration. Fully self-contained — needs
- * no binary assets (the original bg.png / banner_animate.mp4 lived only in the
- * old Supabase bucket and are gone).
- *
- *  - Background: black base + a soft chrome radial glow + faint grid + vignette.
- *  - Calligraphy: local vertical "hvving" logo (public/images/hvving-vertical.png).
- *  - Corner orb: animated chrome wireframe (replaces the old corner video).
+ * Fixed background decoration.
+ *  - Background (behind content): admin-set YouTube music video, else an animated
+ *    chrome↔black glow. Never covers content.
+ *  - Calligraphy: only on the home page (it overlays content, so it's hidden
+ *    elsewhere to keep product info readable).
+ *  - Corner brand video: all pages.
  */
 export function SiteDecor() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const [calligraphyFailed, setCalligraphyFailed] = useState(false);
+
+  const { data: settings } = useQuery({
+    queryKey: ["public-settings"],
+    queryFn: getPublicSettings,
+    staleTime: 5 * 60 * 1000,
+  });
+  const ytId = youtubeId(settings?.bg_youtube_url);
 
   return (
     <>
-      {/* Background gradient + grid layer */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
+      {/* Background layer */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-black">
+        {ytId ? (
+          <>
+            <iframe
+              title="background"
+              src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&modestbranding=1&playsinline=1&rel=0&showinfo=0`}
+              allow="autoplay; encrypted-media"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full"
+            />
+            <div className="absolute inset-0 bg-black/65" />
+          </>
+        ) : (
+          <div
+            className="bg-chrome-shift absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(60% 50% at 30% 20%, rgba(220,220,228,0.9), transparent 60%)," +
+                "radial-gradient(55% 45% at 80% 80%, rgba(160,170,200,0.6), transparent 60%)",
+            }}
+          />
+        )}
+        {/* faint grid */}
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(80% 50% at 50% -10%, rgba(220,220,228,0.10), transparent 60%)," +
-              "radial-gradient(60% 40% at 100% 100%, rgba(160,170,200,0.06), transparent 60%)," +
-              "#000000",
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-[0.05]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
               "linear-gradient(rgba(220,220,228,0.6) 1px, transparent 1px)," +
@@ -40,8 +72,8 @@ export function SiteDecor() {
         />
       </div>
 
-      {/* Left-center vertical calligraphy */}
-      {!calligraphyFailed && (
+      {/* Left-center vertical calligraphy — home page only */}
+      {isHome && !calligraphyFailed && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src="/images/hvving-vertical.png"
@@ -52,8 +84,7 @@ export function SiteDecor() {
         />
       )}
 
-      {/* Corner brand video (bottom-right) — hvvn logo loop. mix-blend-screen keys
-          out the black background. webm first, mp4 fallback. */}
+      {/* Corner brand video (bottom-right) */}
       <video
         autoPlay
         loop

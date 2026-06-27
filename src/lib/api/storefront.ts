@@ -20,6 +20,7 @@ export type PublicSettings = {
   shipping_fee_remote: number;
   instagram_url: string | null;
   contact_email: string | null;
+  bg_youtube_url: string | null;
 };
 export function getPublicSettings() {
   return getJSON<PublicSettings>("/api/settings");

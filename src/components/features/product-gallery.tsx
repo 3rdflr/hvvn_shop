@@ -30,7 +30,7 @@ export function ProductGallery({
 
   return (
     <div className="space-y-3">
-      <div className="relative aspect-[4/5] overflow-hidden bg-velvetGlow/10">
+      <div className="relative aspect-[4/5] overflow-hidden">
         {active && (
           <Image
             src={active}

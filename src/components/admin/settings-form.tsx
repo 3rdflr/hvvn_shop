@@ -15,6 +15,7 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
     shipping_fee_remote: settings?.shipping_fee_remote ?? 7000,
     instagram_url: settings?.instagram_url ?? "",
     contact_email: settings?.contact_email ?? "",
+    bg_youtube_url: settings?.bg_youtube_url ?? "",
   });
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [err, setErr] = useState<string | null>(null);
@@ -36,6 +37,7 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
         shipping_fee_remote: Number(form.shipping_fee_remote) || 0,
         instagram_url: form.instagram_url || null,
         contact_email: form.contact_email || null,
+        bg_youtube_url: form.bg_youtube_url || null,
       });
       setStatus("saved");
       router.refresh();
@@ -112,6 +114,21 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
             />
           </Field>
         </div>
+      </section>
+
+      <section className="space-y-5">
+        <div className="eyebrow">— 배경 영상 (선택)</div>
+        <Field label="YouTube URL (비워두면 크롬↔블랙 애니메이션 배경)">
+          <input
+            className="input"
+            value={form.bg_youtube_url}
+            onChange={(e) => set("bg_youtube_url", e.target.value)}
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+        </Field>
+        <p className="text-xs text-muted">
+          입력하면 메인 페이지 배경에 음소거·반복 재생됩니다. (저작권/임베드 허용 영상만 사용하세요)
+        </p>
       </section>
 
       {err && <div className="text-sm text-accent">{err}</div>}

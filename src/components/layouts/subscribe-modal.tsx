@@ -71,7 +71,7 @@ export function SubscribeModal() {
         role="dialog"
         aria-modal="true"
         aria-label="이메일 구독"
-        className="relative flex w-full flex-col items-center border-t-2 border-chrome bg-black/80 backdrop-blur-md"
+        className="relative flex w-full flex-col items-center border-t border-line bg-black/80 backdrop-blur-md"
       >
         <button
           type="button"

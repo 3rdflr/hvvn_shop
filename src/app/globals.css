@@ -23,6 +23,31 @@ body {
   background-color: #000000;
 }
 
+/* Animated chrome↔black background glow (used when no bg video is set). */
+@keyframes chromeShift {
+  0% {
+    opacity: 0.18;
+    transform: translate3d(-4%, -2%, 0) scale(1.05);
+  }
+  50% {
+    opacity: 0.06;
+    transform: translate3d(4%, 3%, 0) scale(1.15);
+  }
+  100% {
+    opacity: 0.18;
+    transform: translate3d(-4%, -2%, 0) scale(1.05);
+  }
+}
+.bg-chrome-shift {
+  animation: chromeShift 12s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bg-chrome-shift {
+    animation: none;
+    opacity: 0.12;
+  }
+}
+
 @layer components {
   .btn {
     @apply inline-flex items-center justify-center px-5 py-3 text-[13px] tracking-widest2 uppercase border border-chrome bg-chrome text-velvetDeep transition hover:bg-transparent hover:text-chrome disabled:opacity-50 disabled:pointer-events-none;

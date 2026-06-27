@@ -33,7 +33,7 @@ function CartRow({
     <li className="py-5 border-b border-line flex gap-4 sm:gap-6">
       <Link
         href={`/products/${l.product_id}`}
-        className="relative w-20 h-20 sm:w-28 sm:h-28 shrink-0 bg-velvetGlow/20 overflow-hidden"
+        className="relative w-20 h-20 sm:w-28 sm:h-28 shrink-0 overflow-hidden"
       >
         {l.thumbnail_url && (
           <Image src={l.thumbnail_url} alt={l.name} fill className="object-contain" sizes="112px" />

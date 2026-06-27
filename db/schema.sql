@@ -16,10 +16,13 @@ create table if not exists public.settings (
   about_html text,
   instagram_url text,
   contact_email text,
+  bg_youtube_url text, -- optional: background music video (admin-configurable)
   updated_at timestamptz not null default now(),
   constraint settings_singleton check (id = 1)
 );
 insert into public.settings (id) values (1) on conflict do nothing;
+-- For existing DBs:
+alter table public.settings add column if not exists bg_youtube_url text;
 
 -- ---------- Products ----------
 create table if not exists public.products (
