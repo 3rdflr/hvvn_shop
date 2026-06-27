@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Latin → Kanchenjunga, Korean → Gowun Dodum (per-glyph fallback). */
+  --font-sans: "Kanchenjunga", "Gowun Dodum", system-ui, sans-serif;
+  --font-serif: "Newsreader", "Cormorant Garamond", Georgia, serif;
+  --font-gothic: "Pirata One", "UnifrakturCook", Georgia, serif;
+  --font-display: "Kanchenjunga", "Gowun Dodum", system-ui, sans-serif;
+}
+
+html,
+body {
+  background-color: #000000;
+  color: #eef0fb;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #000000;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-5 py-3 text-[13px] tracking-widest2 uppercase border border-chrome bg-chrome text-velvetDeep transition hover:bg-transparent hover:text-chrome disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-5 py-3 text-[13px] tracking-widest2 uppercase border border-chrome/70 bg-transparent text-chrome transition hover:bg-chrome hover:text-velvetDeep disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-3 py-2 text-[12px] tracking-widest2 uppercase text-chrome/70 hover:text-chrome transition;
+  }
+  .input {
+    @apply w-full bg-transparent border-b border-line py-3 text-[14px] text-chrome placeholder:text-muted focus:outline-none focus:border-chrome transition;
+  }
+  .input-box {
+    @apply w-full bg-velvetDeep/60 border border-line px-3 py-3 text-[14px] text-chrome placeholder:text-muted focus:outline-none focus:border-chrome transition;
+  }
+  .label {
+    @apply block text-[11px] tracking-widest2 uppercase text-muted mb-1;
+  }
+  .hairline {
+    @apply border-t border-line;
+  }
+  .container-page {
+    @apply mx-auto max-w-page px-5 md:px-8;
+  }
+  .eyebrow {
+    @apply text-[11px] tracking-widest2 uppercase text-muted;
+  }
+  .h-display {
+    @apply font-gothic text-5xl md:text-7xl leading-[1.02] tracking-tight text-chrome;
+  }
+  .chrome-text {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #d6d9e2;
+  }
+  .chrome-text-soft {
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: #a9aebc;
+  }
+  .panel {
+    @apply bg-sand/50 border border-line backdrop-blur-sm;
+  }
+  .tilt {
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform 0.45s ease;
+  }
+  .group:hover .tilt {
+    transform: rotate(0deg) scale(1.02);
+  }
+  .field-error {
+    @apply text-[12px] text-red-400 mt-1;
+  }
+}
+
+.prose-store h1,
+.prose-store h2,
+.prose-store h3 {
+  font-family: var(--font-gothic);
+  color: #eef0fb;
+}
+.prose-store p {
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+}
+.prose-store a {
+  text-decoration: underline;
+}
+.prose-store ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+.prose-store img {
+  margin: 1rem 0;
+  max-width: 100%;
+}
+.prose-store blockquote {
+  border-left: 2px solid #aeb6ee;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #c3c8e6;
+}
