@@ -46,17 +46,7 @@ export function BagSection({ onShopMore }: { onShopMore: () => void }) {
     );
   }
 
-  if (lineCount === 0) {
-    return (
-      <div className="py-16 text-center">
-        <div className="eyebrow mb-3">— Bag</div>
-        <p className="text-sm text-muted mb-6">장바구니가 비어 있습니다.</p>
-        <button type="button" onClick={onShopMore} className="btn-outline">
-          Continue shopping
-        </button>
-      </div>
-    );
-  }
+  const empty = lineCount === 0;
 
   return (
     <div className="flex flex-col lg:flex-row lg:flex-nowrap lg:items-start lg:justify-center gap-x-16 gap-y-10">
@@ -68,6 +58,7 @@ export function BagSection({ onShopMore }: { onShopMore: () => void }) {
           total={c.total}
           remote={c.remote}
           remoteFee={c.fees.remote}
+          onShopMore={onShopMore}
         />
       </aside>
 
@@ -191,8 +182,12 @@ export function BagSection({ onShopMore }: { onShopMore: () => void }) {
 
         {c.errors._form && <div className="text-sm text-red-400">{c.errors._form}</div>}
 
-        <button disabled={c.submitting} className="btn w-full">
-          {c.submitting ? "Processing..." : `${formatKRW(c.total)} 주문하기`}
+        <button disabled={c.submitting || empty} className="btn w-full">
+          {empty
+            ? "장바구니가 비어 있습니다"
+            : c.submitting
+              ? "Processing..."
+              : `${formatKRW(c.total)} 주문하기`}
         </button>
       </form>
     </div>
@@ -214,12 +209,14 @@ function OrderSummary({
   total,
   remote,
   remoteFee,
+  onShopMore,
 }: {
   subtotal: number;
   shippingFee: number;
   total: number;
   remote: boolean;
   remoteFee: number;
+  onShopMore: () => void;
 }) {
   const lines = useCart((s) => s.lines);
 
@@ -227,11 +224,20 @@ function OrderSummary({
     <div className="flex w-full flex-col">
       <SectionHeader>Order Summary</SectionHeader>
 
-      <div className="no-scrollbar my-2 flex max-h-[46vh] w-full flex-col gap-5 overflow-y-auto py-4">
-        {lines.map((l) => (
-          <SummaryRow key={l.product_id} line={l} />
-        ))}
-      </div>
+      {lines.length === 0 ? (
+        <div className="my-2 flex w-full flex-col items-start gap-4 py-8">
+          <p className="text-sm text-muted">장바구니가 비어 있습니다.</p>
+          <button type="button" onClick={onShopMore} className="btn-outline">
+            Continue shopping
+          </button>
+        </div>
+      ) : (
+        <div className="no-scrollbar my-2 flex max-h-[46vh] w-full flex-col gap-5 overflow-y-auto py-4">
+          {lines.map((l) => (
+            <SummaryRow key={l.product_id} line={l} />
+          ))}
+        </div>
+      )}
 
       <dl className="flex w-full flex-col gap-1 border-y border-line py-3 text-[13px] uppercase">
         <Row label="Subtotal" value={formatKRW(subtotal)} />
