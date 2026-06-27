@@ -6,6 +6,7 @@ import {
 } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/integrations/resend";
 import { shippingEmail } from "@/lib/emails/templates";
+import { cancelOrderWithRestock } from "@/lib/order-mutations";
 import type { Order } from "@/types";
 
 const Schema = z.object({
@@ -29,11 +30,18 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const parsed = Schema.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: "잘못된 상태" }, { status: 400 });
 
+  const svc = createSupabaseServiceClient();
+
+  // Cancelling restores stock.
+  if (parsed.data.status === "cancelled") {
+    await cancelOrderWithRestock(svc, id);
+    return NextResponse.json({ ok: true });
+  }
+
   const patch: Record<string, unknown> = { status: parsed.data.status };
   const tsField = TIMESTAMP_FIELD[parsed.data.status];
   if (tsField) patch[tsField] = new Date().toISOString();
 
-  const svc = createSupabaseServiceClient();
   const { error } = await svc.from("orders").update(patch).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

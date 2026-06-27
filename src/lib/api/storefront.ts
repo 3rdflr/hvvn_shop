@@ -35,6 +35,27 @@ export function lookupOrders(input: { name: string; phone: string }) {
   return postJSON<{ orders: OrderLookupResult[] }>("/api/orders/lookup", input);
 }
 
+export function cancelOrder(input: { order_id: string; name: string; phone: string }) {
+  return postJSON<{ ok: true }>("/api/orders/cancel", input);
+}
+
+export type UpdateOrderItemsInput = {
+  order_id: string;
+  name: string;
+  phone: string;
+  items: { id: string; quantity: number }[];
+};
+export async function updateOrderItems(input: UpdateOrderItemsInput) {
+  const res = await fetch("/api/orders/items", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+  if (!res.ok) throw new Error((json.error as string) ?? "수정 실패");
+  return json as { ok: true };
+}
+
 export type InquiryInput = {
   order_id?: string;
   customer_name: string;
