@@ -16,7 +16,7 @@ create table if not exists public.settings (
   about_html text,
   instagram_url text,
   contact_email text,
-  bg_youtube_url text, -- optional: background music video (admin-configurable)
+  bg_youtube_url text, -- optional: background YouTube URL (admin-configurable)
   updated_at timestamptz not null default now(),
   constraint settings_singleton check (id = 1)
 );

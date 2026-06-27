@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getPublicSettings } from "@/lib/api/storefront";
+import { YouTubeBackground } from "@/components/layouts/youtube-background";
 
 /** Extract a YouTube video id from common URL shapes. */
 function youtubeId(url: string | null | undefined): string | null {
@@ -17,14 +17,10 @@ function youtubeId(url: string | null | undefined): string | null {
 /**
  * Fixed background decoration.
  *  - Background (behind content): admin-set YouTube music video, else an animated
- *    chrome↔black glow. Never covers content.
- *  - Calligraphy: only on the home page (it overlays content, so it's hidden
- *    elsewhere to keep product info readable).
- *  - Corner brand video: all pages.
+ *    chrome↔black glow.
+ *  - Calligraphy + corner video: shown on all pages.
  */
 export function SiteDecor() {
-  const pathname = usePathname();
-  const isHome = pathname === "/";
   const [calligraphyFailed, setCalligraphyFailed] = useState(false);
 
   const { data: settings } = useQuery({
@@ -41,26 +37,17 @@ export function SiteDecor() {
         aria-hidden
         className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-black"
       >
-        {ytId ? (
-          <>
-            <iframe
-              title="background"
-              src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&modestbranding=1&playsinline=1&rel=0&showinfo=0`}
-              allow="autoplay; encrypted-media"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full"
-            />
-            <div className="absolute inset-0 bg-black/65" />
-          </>
-        ) : (
-          <div
-            className="bg-chrome-shift absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(60% 50% at 30% 20%, rgba(220,220,228,0.9), transparent 60%)," +
-                "radial-gradient(55% 45% at 80% 80%, rgba(160,170,200,0.6), transparent 60%)",
-            }}
-          />
-        )}
+        {/* Base: animated chrome↔black glow (always). The video fades in over it. */}
+        <div
+          className="bg-chrome-shift absolute inset-[-10%]"
+          style={{
+            background:
+              "radial-gradient(90% 70% at 50% 25%, rgba(220,220,228,1), transparent 70%)," +
+              "radial-gradient(80% 70% at 20% 90%, rgba(170,180,210,0.8), transparent 70%)," +
+              "radial-gradient(80% 70% at 90% 60%, rgba(150,160,195,0.7), transparent 70%)",
+          }}
+        />
+        {ytId && <YouTubeBackground id={ytId} />}
         {/* faint grid */}
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -77,8 +64,8 @@ export function SiteDecor() {
         />
       </div>
 
-      {/* Left-center vertical calligraphy — home page only */}
-      {isHome && !calligraphyFailed && (
+      {/* Left-center vertical calligraphy — all pages */}
+      {!calligraphyFailed && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src="/images/hvving-vertical.png"

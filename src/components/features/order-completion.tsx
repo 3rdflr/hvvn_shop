@@ -1,7 +1,36 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPublicSettings } from "@/lib/api/storefront";
+
+function CopyButton({ value, label = "복사" }: { value: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      // Fallback for older browsers
+      const ta = document.createElement("textarea");
+      ta.value = value;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className="shrink-0 border border-line text-chrome/80 hover:text-black hover:bg-chrome hover:border-chrome transition px-3 h-8 text-[11px] tracking-widest2 uppercase"
+    >
+      {copied ? "Copied ✓" : label}
+    </button>
+  );
+}
 
 /** In-drawer order confirmation: order number + bank transfer instructions. */
 export function OrderCompletion({ orderNumber }: { orderNumber: string }) {
@@ -19,9 +48,12 @@ export function OrderCompletion({ orderNumber }: { orderNumber: string }) {
         <p className="text-sm text-muted mt-2">아래 계좌로 입금이 확인되면 배송이 시작됩니다.</p>
       </div>
 
-      <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+      <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm items-center">
         <span className="text-muted">주문번호</span>
-        <span className="font-mono select-all">{orderNumber}</span>
+        <span className="flex items-center gap-3 min-w-0">
+          <span className="font-mono select-all truncate">{orderNumber}</span>
+          <CopyButton value={orderNumber} />
+        </span>
       </div>
 
       <div className="border border-line bg-sand/40 p-5">
@@ -29,8 +61,11 @@ export function OrderCompletion({ orderNumber }: { orderNumber: string }) {
         {settings?.bank_account_number ? (
           <>
             <div className="font-serif text-xl">{settings.bank_name}</div>
-            <div className="font-mono text-xl tracking-wider mt-1 select-all">
-              {settings.bank_account_number}
+            <div className="flex items-center gap-3 mt-1">
+              <div className="font-mono text-xl tracking-wider select-all">
+                {settings.bank_account_number}
+              </div>
+              <CopyButton value={settings.bank_account_number} label="계좌 복사" />
             </div>
             <div className="text-sm text-muted mt-1">예금주 {settings.bank_account_holder}</div>
             <p className="text-xs text-muted mt-4">

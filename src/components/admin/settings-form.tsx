@@ -127,7 +127,7 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
           />
         </Field>
         <p className="text-xs text-muted">
-          입력하면 메인 페이지 배경에 음소거·반복 재생됩니다. (저작권/임베드 허용 영상만 사용하세요)
+          입력하면 사이트 배경에 음소거·반복 재생됩니다. (임베드 허용된 영상만 사용하세요)
         </p>
       </section>
 
