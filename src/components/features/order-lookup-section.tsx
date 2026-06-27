@@ -85,6 +85,7 @@ function OrderCard({
   onChanged: () => void;
 }) {
   const editable = order.status === "pending_payment";
+  const cancelled = order.status === "cancelled";
   const [qty, setQty] = useState<Record<string, number>>(
     Object.fromEntries(order.items.map((it) => [it.id, it.quantity]))
   );
@@ -161,7 +162,11 @@ function OrderCard({
               ) : (
                 <span className="text-muted shrink-0">× {it.quantity}</span>
               )}
-              <span className="whitespace-nowrap w-20 text-right">
+              <span
+                className={`whitespace-nowrap w-20 text-right ${
+                  cancelled ? "line-through text-muted" : ""
+                }`}
+              >
                 {formatKRW(it.unit_price_krw * q)}
               </span>
             </li>
@@ -170,10 +175,19 @@ function OrderCard({
       </ul>
 
       <div className="flex justify-between items-baseline mt-3">
-        <span className="text-sm text-muted">{dirty ? "변경 후 상품합계" : "합계"}</span>
-        <span className="chrome-text text-lg">
-          {formatKRW(dirty ? newTotal : order.total_krw)}
+        <span className="text-sm text-muted">
+          {cancelled ? "취소됨" : dirty ? "변경 후 상품합계" : "합계"}
         </span>
+        {cancelled ? (
+          <span className="flex items-baseline gap-2">
+            <span className="text-sm text-muted line-through">{formatKRW(order.total_krw)}</span>
+            <span className="chrome-text text-lg">{formatKRW(0)}</span>
+          </span>
+        ) : (
+          <span className="chrome-text text-lg">
+            {formatKRW(dirty ? newTotal : order.total_krw)}
+          </span>
+        )}
       </div>
       {dirty && (
         <p className="text-[11px] text-muted mt-1">배송비 포함 최종 금액은 저장 후 갱신됩니다.</p>
