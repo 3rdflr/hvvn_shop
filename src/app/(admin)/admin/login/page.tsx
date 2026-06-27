@@ -70,9 +70,21 @@ function LoginForm() {
             <button
               type="button"
               onClick={() => setShowPw((v) => !v)}
-              className="absolute right-0 bottom-2 text-[11px] tracking-widest2 uppercase text-muted hover:text-chrome transition"
+              aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 표시"}
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-muted hover:text-chrome transition"
             >
-              {showPw ? "Hide" : "Show"}
+              {showPw ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <path d="M6.61 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9.12 9.12 0 0 0 5.39-1.61" />
+                  <path d="M2 2l20 20" />
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
             </button>
           </div>
         </label>
