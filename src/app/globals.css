@@ -26,15 +26,15 @@ body {
 /* Animated chrome↔black background glow (used when no bg video is set). */
 @keyframes chromeShift {
   0% {
-    opacity: 0.15;
+    opacity: 0.2;
     transform: translate3d(-4%, -2%, 0) scale(1.05);
   }
   50% {
-    opacity: 0.05;
+    opacity: 0.1;
     transform: translate3d(4%, 3%, 0) scale(1.15);
   }
   100% {
-    opacity: 0.15;
+    opacity: 0.2;
     transform: translate3d(-4%, -2%, 0) scale(1.05);
   }
 }

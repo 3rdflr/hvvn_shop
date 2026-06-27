@@ -22,7 +22,7 @@ type YTNamespace = {
         onReady?: (e: YTPlayerEvent) => void;
         onStateChange?: (e: YTPlayerEvent) => void;
       };
-    }
+    },
   ) => YTPlayer;
   PlayerState: { PLAYING: number; ENDED: number };
 };
@@ -61,7 +61,7 @@ export function YouTubeBackground({ id }: { id: string }) {
       if (hasPlayedRef.current) return; // reveal once; route changes handle re-fades
       hasPlayedRef.current = true;
       // generous grace so YouTube's start-up play button is fully gone first
-      setTimeout(() => !cancelled && setReady(true), 5000);
+      setTimeout(() => !cancelled && setReady(true), 4000);
     };
 
     const createPlayer = () => {
@@ -91,7 +91,8 @@ export function YouTubeBackground({ id }: { id: string }) {
           onStateChange: (e) => {
             if (!window.YT) return;
             if (e.data === window.YT.PlayerState.PLAYING) reveal();
-            else if (e.data === window.YT.PlayerState.ENDED) e.target.playVideo();
+            else if (e.data === window.YT.PlayerState.ENDED)
+              e.target.playVideo();
           },
         },
       });
@@ -122,7 +123,9 @@ export function YouTubeBackground({ id }: { id: string }) {
       }
     };
     const events = ["pointerdown", "touchstart", "keydown", "scroll"] as const;
-    events.forEach((e) => window.addEventListener(e, onGesture, { passive: true }));
+    events.forEach((e) =>
+      window.addEventListener(e, onGesture, { passive: true }),
+    );
 
     return () => {
       cancelled = true;
@@ -147,7 +150,7 @@ export function YouTubeBackground({ id }: { id: string }) {
     <div
       className={cn(
         "absolute inset-0 overflow-hidden transition-opacity duration-[1200ms] ease-out",
-        ready ? "opacity-100" : "opacity-0"
+        ready ? "opacity-100" : "opacity-0",
       )}
     >
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full scale-[1.6]">
