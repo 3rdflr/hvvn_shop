@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { ConsoleSignature } from "@/components/layouts/console-signature";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const ogImage = `${siteUrl}/images/hvving-vertical.png`;
@@ -44,6 +46,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <QueryProvider>{children}</QueryProvider>
+        <ConsoleSignature />
+        <Analytics />
       </body>
     </html>
   );
