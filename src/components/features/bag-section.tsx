@@ -1,22 +1,42 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/store/cart";
 import { useCheckout } from "@/hooks/use-checkout";
+import { useSubscribeEmail } from "@/hooks/use-storefront-mutations";
 import { TextField } from "@/components/ui/text-field";
-import { CartList } from "@/components/features/cart-list";
 import { OrderCompletion } from "@/components/features/order-completion";
 import { formatKRW } from "@/lib/format";
+import type { CartLine } from "@/types";
 
 /**
- * Drawer "Bag" tab.
- *  - Desktop: two columns — orderer info (left) · cart (right).
- *  - Mobile: single column — cart first, then orderer info.
- * The cart lives OUTSIDE the <form> so its qty/remove buttons can never submit
- * the order form (which previously fired validation on every cart change).
+ * Drawer "Bag" tab — YZY-style two-column checkout adapted to the black/chrome
+ * palette.
+ *  - Desktop: form (left) · sticky Order Summary (right), split ~50/50.
+ *  - Mobile: Order Summary (top) → contact/subscribe → address → payment.
+ * The summary lives OUTSIDE the <form> so its qty/remove controls never submit.
  */
 export function BagSection({ onShopMore }: { onShopMore: () => void }) {
   const lineCount = useCart((s) => s.lines.length);
   const c = useCheckout();
+  const [subscribe, setSubscribe] = useState(false);
+  const subEmail = useSubscribeEmail();
+  const subscribedRef = useRef(false);
+
+  // Opt the customer into the mailing list once the order is placed.
+  useEffect(() => {
+    if (
+      c.completedOrderNumber &&
+      subscribe &&
+      !subscribedRef.current &&
+      c.form.customer_email
+    ) {
+      subscribedRef.current = true;
+      subEmail.mutate({ email: c.form.customer_email, source: "checkout" });
+    }
+  }, [c.completedOrderNumber, subscribe, c.form.customer_email, subEmail]);
 
   if (c.completedOrderNumber) {
     return (
@@ -39,29 +59,29 @@ export function BagSection({ onShopMore }: { onShopMore: () => void }) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row md:gap-10 lg:gap-16 md:items-start">
-      {/* Cart — right on desktop, first on mobile */}
-      <section className="order-1 md:order-2 md:flex-1 md:max-w-md w-full">
-        <div className="eyebrow mb-3">— Bag · {lineCount}</div>
-        <CartList />
-        <div className="mt-4 flex justify-between text-sm">
-          <span className="text-muted">상품 합계</span>
-          <span className="chrome-text text-xl">{formatKRW(c.subtotal)}</span>
-        </div>
-        <p className="text-xs text-muted mt-1">배송비는 우편번호 입력 시 계산됩니다.</p>
-      </section>
+    <div className="flex flex-col lg:flex-row lg:flex-nowrap lg:items-start lg:justify-center gap-x-16 gap-y-10">
+      {/* Order Summary — right on desktop (sticky), first on mobile. */}
+      <aside className="order-1 lg:order-2 w-full lg:w-[min(34rem,50%)] lg:sticky lg:top-4">
+        <OrderSummary
+          subtotal={c.subtotal}
+          shippingFee={c.shippingFee}
+          total={c.total}
+          remote={c.remote}
+          remoteFee={c.fees.remote}
+        />
+      </aside>
 
-      {/* Orderer info — left on desktop, second on mobile */}
+      {/* Checkout form — left on desktop, second on mobile. */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           c.submit();
         }}
         noValidate
-        className="order-2 md:order-1 md:flex-1 w-full space-y-10 mt-12 md:mt-0"
+        className="order-2 lg:order-1 w-full lg:w-[min(34rem,50%)] space-y-10"
       >
         <section className="space-y-5">
-          <div className="eyebrow">— 주문자 정보</div>
+          <SectionHeader>주문자 정보</SectionHeader>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
             <TextField
               name="customer_name"
@@ -93,10 +113,21 @@ export function BagSection({ onShopMore }: { onShopMore: () => void }) {
               onChange={(v) => c.setField("customer_email", v)}
             />
           </div>
+          <label className="flex w-full cursor-pointer items-center gap-2 select-none">
+            <input
+              type="checkbox"
+              checked={subscribe}
+              onChange={(e) => setSubscribe(e.target.checked)}
+              className="h-4 w-4 shrink-0 accent-chrome"
+            />
+            <span className="text-[11px] tracking-widest2 uppercase text-muted">
+              새 소식·재입고 알림 받기 (구독)
+            </span>
+          </label>
         </section>
 
         <section className="space-y-5">
-          <div className="eyebrow">— 배송지</div>
+          <SectionHeader>배송지</SectionHeader>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
             <TextField
               name="shipping_postcode"
@@ -143,7 +174,7 @@ export function BagSection({ onShopMore }: { onShopMore: () => void }) {
         </section>
 
         <section className="space-y-5">
-          <div className="eyebrow">— 결제 (무통장입금)</div>
+          <SectionHeader>결제 · 무통장입금</SectionHeader>
           <TextField
             name="depositor_name"
             label="입금자명"
@@ -158,27 +189,133 @@ export function BagSection({ onShopMore }: { onShopMore: () => void }) {
           </p>
         </section>
 
-        <div className="space-y-2 border-t border-line pt-5">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted">상품 합계</span>
-            <span>{formatKRW(c.subtotal)}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted">배송비</span>
-            <span>{formatKRW(c.shippingFee)}</span>
-          </div>
-          <div className="flex justify-between items-baseline">
-            <span className="text-sm text-muted">합계</span>
-            <span className="chrome-text text-2xl">{formatKRW(c.total)}</span>
-          </div>
-        </div>
-
         {c.errors._form && <div className="text-sm text-red-400">{c.errors._form}</div>}
 
         <button disabled={c.submitting} className="btn w-full">
           {c.submitting ? "Processing..." : `${formatKRW(c.total)} 주문하기`}
         </button>
       </form>
+    </div>
+  );
+}
+
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="w-full border-b border-line pb-2 text-[12px] tracking-widest2 uppercase text-chrome/90">
+      {children}
+    </h3>
+  );
+}
+
+/** YZY-style compact order summary: item rows + qty steppers + totals. */
+function OrderSummary({
+  subtotal,
+  shippingFee,
+  total,
+  remote,
+  remoteFee,
+}: {
+  subtotal: number;
+  shippingFee: number;
+  total: number;
+  remote: boolean;
+  remoteFee: number;
+}) {
+  const lines = useCart((s) => s.lines);
+
+  return (
+    <div className="flex w-full flex-col">
+      <SectionHeader>Order Summary</SectionHeader>
+
+      <div className="no-scrollbar my-2 flex max-h-[46vh] w-full flex-col gap-5 overflow-y-auto py-4">
+        {lines.map((l) => (
+          <SummaryRow key={l.product_id} line={l} />
+        ))}
+      </div>
+
+      <dl className="flex w-full flex-col gap-1 border-y border-line py-3 text-[13px] uppercase">
+        <Row label="Subtotal" value={formatKRW(subtotal)} />
+        <Row label="Shipping" value={formatKRW(shippingFee)} />
+        {remote && (
+          <p className="text-[11px] text-accent normal-case tracking-normal">
+            제주/도서산간 +{formatKRW(remoteFee)}
+          </p>
+        )}
+      </dl>
+
+      <div className="flex w-full items-baseline justify-between py-3 uppercase">
+        <span className="text-[13px] text-muted">Total</span>
+        <span className="chrome-text text-2xl">{formatKRW(total)}</span>
+      </div>
+    </div>
+  );
+}
+
+function SummaryRow({ line: l }: { line: CartLine }) {
+  const setQuantity = useCart((s) => s.setQuantity);
+  const remove = useCart((s) => s.remove);
+
+  return (
+    <div className="flex w-full items-start gap-4">
+      <Link
+        href={`/products/${l.product_id}`}
+        className="relative w-24 aspect-square shrink-0 overflow-hidden"
+      >
+        {l.thumbnail_url && (
+          <Image src={l.thumbnail_url} alt={l.name} fill className="object-contain" sizes="96px" />
+        )}
+      </Link>
+
+      <div className="flex flex-1 min-w-0 flex-col gap-1 text-[13px] uppercase">
+        <div className="flex w-full items-center justify-between gap-2">
+          <span className="chrome-text-soft truncate">{l.name}</span>
+          <span className="whitespace-nowrap text-chrome/90">
+            {formatKRW(l.price_krw * l.quantity)}
+          </span>
+        </div>
+        <div className="text-[11px] normal-case tracking-normal text-muted">
+          {formatKRW(l.price_krw)} / 개
+        </div>
+
+        <div className="mt-1 flex items-center justify-between gap-2">
+          <div className="flex items-center border border-line">
+            <button
+              type="button"
+              aria-label="수량 감소"
+              onClick={() => setQuantity(l.product_id, l.quantity - 1)}
+              className="w-7 h-7 text-chrome hover:bg-velvetGlow/40 transition"
+            >
+              −
+            </button>
+            <span className="w-8 text-center text-sm text-chrome">{l.quantity}</span>
+            <button
+              type="button"
+              aria-label="수량 증가"
+              onClick={() => setQuantity(l.product_id, l.quantity + 1)}
+              className="w-7 h-7 text-chrome hover:bg-velvetGlow/40 transition"
+            >
+              +
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => remove(l.product_id)}
+            aria-label={`${l.name} 삭제`}
+            className="text-[10px] tracking-widest2 uppercase text-chrome/60 hover:text-chrome transition focus:outline-none focus-visible:ring-1 focus-visible:ring-chrome"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex w-full items-center justify-between">
+      <span className="flex-1 text-muted">{label}</span>
+      <span className="text-chrome/90">{value}</span>
     </div>
   );
 }

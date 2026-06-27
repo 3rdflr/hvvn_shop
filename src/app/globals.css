@@ -93,6 +93,12 @@ body {
   .panel {
     @apply bg-sand/50 border border-line backdrop-blur-sm;
   }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
   .tilt {
     transform: rotate(var(--tilt, 0deg));
     transition: transform 0.45s ease;
