@@ -83,7 +83,7 @@ export function SiteDecor() {
         muted
         playsInline
         aria-hidden
-        className="pointer-events-none fixed bottom-3 right-3 md:bottom-5 md:right-5 w-16 md:w-24 z-60 opacity-90 mix-blend-screen"
+        className="pointer-events-none fixed bottom-3 right-3 md:bottom-5 md:right-5 w-16 md:w-24 z-[60] opacity-90 mix-blend-screen"
       >
         <source src="/images/hvvn_video.webm" type="video/webm" />
         <source src="/images/hvvn_video.mp4" type="video/mp4" />
