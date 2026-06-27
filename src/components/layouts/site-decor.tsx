@@ -9,7 +9,7 @@ import { getPublicSettings } from "@/lib/api/storefront";
 function youtubeId(url: string | null | undefined): string | null {
   if (!url) return null;
   const m = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/,
   );
   return m?.[1] ?? null;
 }
@@ -37,7 +37,10 @@ export function SiteDecor() {
   return (
     <>
       {/* Background layer */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-black">
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-black"
+      >
         {ytId ? (
           <>
             <iframe
@@ -66,8 +69,10 @@ export function SiteDecor() {
               "linear-gradient(rgba(220,220,228,0.6) 1px, transparent 1px)," +
               "linear-gradient(90deg, rgba(220,220,228,0.6) 1px, transparent 1px)",
             backgroundSize: "64px 64px",
-            maskImage: "radial-gradient(70% 60% at 50% 40%, black, transparent 85%)",
-            WebkitMaskImage: "radial-gradient(70% 60% at 50% 40%, black, transparent 85%)",
+            maskImage:
+              "radial-gradient(70% 60% at 50% 40%, black, transparent 85%)",
+            WebkitMaskImage:
+              "radial-gradient(70% 60% at 50% 40%, black, transparent 85%)",
           }}
         />
       </div>
@@ -91,7 +96,7 @@ export function SiteDecor() {
         muted
         playsInline
         aria-hidden
-        className="pointer-events-none fixed bottom-3 right-3 md:bottom-5 md:right-5 w-16 md:w-24 z-0 opacity-90 mix-blend-screen"
+        className="pointer-events-none fixed bottom-3 right-3 md:bottom-5 md:right-5 w-16 md:w-24 z-60 opacity-90 mix-blend-screen"
       >
         <source src="/images/hvvn_video.webm" type="video/webm" />
         <source src="/images/hvvn_video.mp4" type="video/mp4" />
