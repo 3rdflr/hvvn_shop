@@ -1,11 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 /**
- * Renders a brand logo image, falling back to a styled gothic wordmark
- * if the asset is missing (so the site looks intentional before the
- * artist drops the real PNGs into the site-assets bucket).
+ * Brand logo via next/image (auto-optimized → tiny WebP for the small header
+ * render). Falls back to a gothic "hvving" wordmark if the asset is missing.
  */
 export function BrandLogo({
   src,
@@ -13,16 +13,19 @@ export function BrandLogo({
   className = "",
   fallbackClassName = "",
   vertical = false,
+  width = 1400,
+  height = 990,
 }: {
   src: string;
   alt: string;
   className?: string;
   fallbackClassName?: string;
   vertical?: boolean;
+  width?: number;
+  height?: number;
 }) {
   const [failed, setFailed] = useState(false);
 
-  // No asset configured (or it failed to load) → clean gothic wordmark, never a broken image.
   if (failed || !src) {
     return (
       <span
@@ -35,6 +38,16 @@ export function BrandLogo({
     );
   }
 
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt={alt} className={className} onError={() => setFailed(true)} />;
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      className={className}
+      sizes="240px"
+      priority
+      onError={() => setFailed(true)}
+    />
+  );
 }

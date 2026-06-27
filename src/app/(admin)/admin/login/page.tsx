@@ -1,11 +1,10 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function LoginForm() {
-  const router = useRouter();
   const sp = useSearchParams();
   const next = sp.get("next") ?? "/admin";
   const [email, setEmail] = useState("");
@@ -24,8 +23,9 @@ function LoginForm() {
       setLoading(false);
       return;
     }
-    router.replace(next);
-    router.refresh();
+    // Hard navigation so the server re-renders with the fresh session cookie
+    // (avoids the login form lingering / redirect race).
+    window.location.replace(next || "/admin");
   }
 
   return (

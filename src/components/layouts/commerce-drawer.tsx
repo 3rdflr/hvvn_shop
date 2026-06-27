@@ -62,8 +62,8 @@ export function CommerceDrawer() {
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {/* Header: tabs + close */}
-        <div className="flex items-center justify-between border-b border-line container-page h-14 shrink-0">
+        {/* Header: tabs pinned far-left, close pinned far-right (full-bleed) */}
+        <div className="flex items-center justify-between border-b border-line w-full px-5 md:px-8 h-14 shrink-0">
           <div className="flex items-center gap-5">
             <TabButton active={tab === "bag"} onClick={() => setTab("bag")}>
               Bag{count > 0 ? ` (${count})` : ""}
@@ -84,9 +84,9 @@ export function CommerceDrawer() {
           </button>
         </div>
 
-        {/* Scrollable body */}
+        {/* Scrollable body (full-bleed to match the header edges) */}
         <div className="flex-1 overflow-y-auto">
-          <div className="container-page py-8 md:py-12">
+          <div className="w-full px-5 md:px-8 py-8 md:py-12">
             {tab === "bag" ? <BagSection onShopMore={close} /> : <OrderLookupSection />}
           </div>
         </div>
