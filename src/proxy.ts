@@ -30,9 +30,16 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // A stale/invalid auth cookie (e.g. left over from a previous Supabase project)
+  // makes getUser() attempt a refresh that can throw "refresh_token_not_found".
+  // Treat any auth failure as logged-out instead of crashing the request.
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    user = null;
+  }
 
   const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
   const isAdminLogin = request.nextUrl.pathname.startsWith("/admin/login");

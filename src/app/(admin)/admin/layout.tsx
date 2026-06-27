@@ -17,9 +17,15 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const sb = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await sb.auth.getUser();
+  // Tolerate stale/invalid auth cookies (refresh_token_not_found) so the login
+  // page still renders instead of erroring.
+  let user = null;
+  try {
+    const { data } = await sb.auth.getUser();
+    user = data.user;
+  } catch {
+    user = null;
+  }
 
   return (
     <div className="container-page py-8 md:py-10 min-h-screen">
