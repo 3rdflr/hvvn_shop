@@ -1,7 +1,7 @@
 # HVVN Store
 
 아티스트 hvvn 굿즈 판매를 위한 인디/미니멀 무드의 이커머스 플랫폼.
-hvvn_page(바이브 코딩 prototype)를 **예측 가능한 아키텍처**로 재작성한 프로젝트입니다.
+hvvn_page(바이브 코딩으로 이루어진 prototype)를 **예측 가능한 아키텍처**로 재작성한 프로젝트입니다.
 
 ## Tech Stack
 
