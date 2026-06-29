@@ -5,8 +5,9 @@ export type SendEmailParams = {
   to: string;
   subject: string;
   html: string;
-  template: string; // 'order_confirmation' | 'shipping' | 'restock' | ...
+  template: string; // 'order_confirmation' | 'shipping' | 'restock' | 'inquiry' | ...
   refId?: string; // order number / product id, for the audit log
+  replyTo?: string; // e.g. the customer's email so admin can reply directly
 };
 
 export type SendEmailResult = { ok: boolean; skipped?: boolean; error?: string };
@@ -32,6 +33,7 @@ export async function sendEmail(params: SendEmailParams): Promise<SendEmailResul
       to: params.to,
       subject: params.subject,
       html: params.html,
+      ...(params.replyTo ? { replyTo: params.replyTo } : {}),
     });
     if (error) {
       await logEmail(params, "failed", undefined, error.message);

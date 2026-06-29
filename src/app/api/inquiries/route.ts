@@ -3,6 +3,13 @@ import { z } from "zod";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import { emailSchema } from "@/lib/validation/order";
 import { checkInquiryRateLimit } from "@/lib/rate-limit";
+import { sendEmail } from "@/lib/integrations/resend";
+
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string
+  );
+}
 
 const Schema = z.object({
   order_id: z.string().uuid().optional(),
@@ -41,5 +48,33 @@ export async function POST(req: Request) {
     message: input.message,
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Notify the admin's configured contact email (best-effort; never blocks the
+  // submission). Reply-to is set to the customer so admin can answer directly.
+  const { data: settings } = await sb
+    .from("settings")
+    .select("contact_email")
+    .eq("id", 1)
+    .maybeSingle<{ contact_email: string | null }>();
+  if (settings?.contact_email) {
+    const html = `
+      <h2>새 문의가 접수되었습니다</h2>
+      <p><b>이름</b>: ${escapeHtml(input.customer_name)}</p>
+      <p><b>이메일</b>: ${escapeHtml(input.customer_email)}</p>
+      ${input.customer_phone ? `<p><b>전화</b>: ${escapeHtml(input.customer_phone)}</p>` : ""}
+      ${input.order_id ? `<p><b>주문 연결</b>: ${escapeHtml(input.order_id)}</p>` : ""}
+      <p><b>내용</b>:</p>
+      <p style="white-space:pre-wrap">${escapeHtml(input.message)}</p>
+    `;
+    await sendEmail({
+      to: settings.contact_email,
+      subject: `[HVVN 문의] ${input.customer_name}`,
+      html,
+      template: "inquiry",
+      refId: input.order_id ?? input.customer_email,
+      replyTo: input.customer_email,
+    });
+  }
+
   return NextResponse.json({ ok: true });
 }
