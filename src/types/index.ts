@@ -121,6 +121,17 @@ export type EmailSubscriber = {
   unsubscribed_at: string | null;
 };
 
+export type EmailLog = {
+  id: string;
+  to_email: string;
+  template: string;
+  ref_id: string | null;
+  provider_id: string | null;
+  status: "sent" | "failed";
+  error: string | null;
+  created_at: string;
+};
+
 export type Settings = {
   id: number;
   bank_name: string | null;
