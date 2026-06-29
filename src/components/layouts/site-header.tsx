@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { HeaderMenu } from "./header-menu";
 import { useScrolled } from "@/hooks/use-scrolled";
+import { useUi } from "@/store/ui";
 import { cn } from "@/lib/utils";
 
 /**
@@ -17,6 +18,7 @@ import { cn } from "@/lib/utils";
  */
 export function SiteHeader() {
   const scrolled = useScrolled(8);
+  const openCard = useUi((s) => s.openCard);
   // Horizontal brand logo (public/images). Empty string → gothic "hvving" wordmark.
   const headerLogo = "/images/hvvn_header.png";
 
@@ -35,7 +37,29 @@ export function SiteHeader() {
 
       {/* Height matches the original design (h-16 / md:h-12). */}
       <div className="container-page relative h-16 md:h-12 grid grid-cols-[1fr_auto_1fr] items-center">
-        <div aria-hidden />
+        <div className="flex items-center justify-start">
+          <button
+            type="button"
+            aria-label="정보"
+            onClick={openCard}
+            className="flex items-center text-chrome hover:opacity-80 transition focus:outline-none focus-visible:ring-1 focus-visible:ring-chrome rounded-sm"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+            >
+              <circle cx="12" cy="12" r="9.5" />
+              {/* italic "i" — slanted stem + dot */}
+              <path d="M12.7 10.6L11.3 16.4" />
+              <circle cx="13.1" cy="7.7" r="0.55" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+        </div>
         <div className="flex justify-center overflow-visible">
           <Link href="/" aria-label="hvving home" className="flex items-center">
             <BrandLogo

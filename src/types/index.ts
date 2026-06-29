@@ -22,6 +22,19 @@ export type ProductImage = {
   position: number;
 };
 
+export type PortfolioItem = {
+  id: string;
+  title: string;
+  content: string | null;
+  type: string | null;
+  work_date: string | null;
+  main_url: string;
+  is_published: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ProductWithImages = Product & {
   images: ProductImage[];
   set_members?: Product[];

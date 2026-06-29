@@ -1,5 +1,6 @@
 import { postJSON } from "./client";
 import type { ProductInput } from "@/lib/validation/product";
+import type { PortfolioInput } from "@/lib/validation/portfolio";
 
 async function sendJSON<T>(url: string, method: "PATCH" | "DELETE", body?: unknown): Promise<T> {
   const res = await fetch(url, {
@@ -32,6 +33,19 @@ export function updateSettings(input: Record<string, unknown>) {
 
 export function reorderProducts(ids: string[]) {
   return postJSON<{ ok: true }, { ids: string[] }>("/api/admin/products/reorder", { ids });
+}
+
+export function createPortfolioItem(input: PortfolioInput) {
+  return postJSON<{ id: string }, PortfolioInput>("/api/admin/portfolio", input);
+}
+export function updatePortfolioItem(id: string, input: PortfolioInput) {
+  return sendJSON<{ ok: true }>(`/api/admin/portfolio/${id}`, "PATCH", input);
+}
+export function deletePortfolioItem(id: string) {
+  return sendJSON<{ ok: true }>(`/api/admin/portfolio/${id}`, "DELETE");
+}
+export function reorderPortfolio(ids: string[]) {
+  return postJSON<{ ok: true }, { ids: string[] }>("/api/admin/portfolio/reorder", { ids });
 }
 
 export function notifyRestock(id: string) {

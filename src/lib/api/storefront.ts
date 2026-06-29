@@ -1,6 +1,10 @@
 import { postJSON, getJSON } from "./client";
 import type { CheckoutInput } from "@/lib/validation/order";
-import type { Order, OrderItem } from "@/types";
+import type { Order, OrderItem, PortfolioItem } from "@/types";
+
+export function getPortfolio() {
+  return getJSON<{ items: PortfolioItem[] }>("/api/portfolio");
+}
 
 export type CreateOrderResponse = { order_number: string; id: string };
 export function createOrder(input: CheckoutInput) {

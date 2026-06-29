@@ -49,6 +49,62 @@ body {
   }
 }
 
+/* Portfolio 3D viewer — A$AP-style "3D motion collage": a flat floor (turntable)
+   lies parallel to the ground and rotates slowly; the subject stands UPRIGHT on
+   it and turns around its vertical axis in sync (like an object on a microwave
+   turntable). Floor rotateZ and standee rotateY share the same period. */
+.portfolio-stage {
+  perspective: 1300px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+/* The whole turntable group spins around the vertical axis; the floor lies flat
+   and the subjects stand upright on it, so everything orbits together. */
+@keyframes groupSpin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+.portfolio-group {
+  transform-style: preserve-3d;
+  animation: groupSpin 44s linear infinite;
+}
+.portfolio-group.is-paused {
+  animation-play-state: paused;
+}
+.portfolio-floor {
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%) rotateX(87deg); /* nearly parallel to the ground */
+}
+.portfolio-standee {
+  transform-style: preserve-3d;
+  /* keep visible (mirrored) when it turns away, so it doesn't blink out */
+  backface-visibility: visible;
+}
+/* Main swap interaction when navigating prev/next (opacity+blur only, so it
+   doesn't fight the standee's translate transform). */
+@keyframes standeeEnter {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+.standee-enter {
+  animation: standeeEnter 480ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-group {
+    animation: none;
+  }
+}
+
 @layer components {
   .btn {
     @apply inline-flex items-center justify-center px-5 py-3 text-[13px] tracking-widest2 uppercase border border-chrome bg-chrome text-velvetDeep transition hover:bg-transparent hover:text-chrome disabled:opacity-50 disabled:pointer-events-none;

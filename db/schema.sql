@@ -158,6 +158,22 @@ create table if not exists public.email_log (
 );
 create index if not exists email_log_ref_idx on public.email_log (template, ref_id);
 
+-- ---------- Portfolio (작업 아카이브 / 3D 뷰어) ----------
+create table if not exists public.portfolio_items (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  content text,                      -- 상세 내용 (모달 본문)
+  type text,                         -- 분류 (예: Editorial, Commission)
+  work_date date,                    -- 작업 날짜
+  main_url text not null,            -- 메인 gif/img (턴테이블 위 standee)
+  is_published boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists portfolio_published_idx
+  on public.portfolio_items (is_published, sort_order, created_at desc);
+
 -- ---------- Integrations (Google, Kakao, …) ----------
 create table if not exists public.integrations (
   id uuid primary key default gen_random_uuid(),
@@ -190,6 +206,7 @@ alter table public.inquiries enable row level security;
 alter table public.email_subscribers enable row level security;
 alter table public.email_log enable row level security;
 alter table public.integrations enable row level security;
+alter table public.portfolio_items enable row level security;
 
 drop policy if exists "settings: public read non-sensitive" on public.settings;
 create policy "settings: public read non-sensitive" on public.settings
@@ -210,6 +227,10 @@ create policy "product_set_items: public read" on public.product_set_items
   for select using (
     exists (select 1 from public.products p where p.id = set_id and p.is_published)
   );
+
+drop policy if exists "portfolio: public read published" on public.portfolio_items;
+create policy "portfolio: public read published" on public.portfolio_items
+  for select using (is_published);
 
 -- Orders / inquiries / waitlist / subscribers / email_log / integrations:
 -- NO anon policies. Server uses service role for all writes/reads.

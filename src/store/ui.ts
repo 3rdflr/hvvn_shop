@@ -13,6 +13,15 @@ type UiState = {
   infoOpen: boolean;
   openInfo: () => void;
   closeInfo: () => void;
+  portfolioOpen: boolean;
+  openPortfolio: () => void;
+  closePortfolio: () => void;
+  contactOpen: boolean;
+  openContact: () => void;
+  closeContact: () => void;
+  cardOpen: boolean;
+  openCard: () => void;
+  closeCard: () => void;
 };
 
 /**
@@ -28,4 +37,13 @@ export const useUi = create<UiState>((set) => ({
   infoOpen: false,
   openInfo: () => set({ infoOpen: true }),
   closeInfo: () => set({ infoOpen: false }),
+  portfolioOpen: false,
+  openPortfolio: () => set({ portfolioOpen: true }),
+  closePortfolio: () => set({ portfolioOpen: false }),
+  contactOpen: false,
+  openContact: () => set({ contactOpen: true }),
+  closeContact: () => set({ contactOpen: false }),
+  cardOpen: false,
+  openCard: () => set({ cardOpen: true }),
+  closeCard: () => set({ cardOpen: false }),
 }));
