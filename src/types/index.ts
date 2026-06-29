@@ -139,6 +139,7 @@ export type Settings = {
   bank_account_holder: string | null;
   shipping_fee_default: number;
   shipping_fee_remote: number;
+  free_shipping_threshold: number;
   about_html: string | null;
   instagram_url: string | null;
   contact_email: string | null;

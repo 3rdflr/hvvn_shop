@@ -52,14 +52,16 @@ export async function POST(req: Request) {
   const { data: settings } = await sb
     .from("settings")
     .select(
-      "shipping_fee_default, shipping_fee_remote, bank_name, bank_account_number, bank_account_holder"
+      "shipping_fee_default, shipping_fee_remote, free_shipping_threshold, bank_name, bank_account_number, bank_account_holder"
     )
     .eq("id", 1)
     .maybeSingle();
   const remote = isRemoteArea(input.shipping_postcode);
-  const shipping = remote
+  const baseShipping = remote
     ? settings?.shipping_fee_remote ?? 7000
     : settings?.shipping_fee_default ?? 4000;
+  const freeOver = settings?.free_shipping_threshold ?? 0;
+  const shipping = freeOver > 0 && subtotal >= freeOver ? 0 : baseShipping;
   const total = subtotal + shipping;
   const orderNumber = generateOrderNumber();
 

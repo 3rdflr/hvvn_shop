@@ -126,13 +126,13 @@ export function ProductForm({
         />
       </Field>
 
-      <Field label="상세 설명 (HTML 허용)" error={errors.description_html}>
+      <Field label="상세 설명" error={errors.description_html}>
         <textarea
           className="input-box"
           rows={6}
           value={form.description_html}
           onChange={(e) => set("description_html", e.target.value)}
-          placeholder="<p>상품 설명...</p>"
+          placeholder="상품 설명을 입력하세요. 줄바꿈은 그대로 반영됩니다."
         />
       </Field>
 

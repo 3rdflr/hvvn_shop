@@ -11,6 +11,7 @@ const Schema = z.object({
   bank_account_holder: z.string().nullable().optional(),
   shipping_fee_default: z.number().int().nonnegative(),
   shipping_fee_remote: z.number().int().nonnegative(),
+  free_shipping_threshold: z.number().int().nonnegative(),
   instagram_url: z.string().nullable().optional(),
   contact_email: z.string().nullable().optional(),
   bg_youtube_url: z.string().nullable().optional(),

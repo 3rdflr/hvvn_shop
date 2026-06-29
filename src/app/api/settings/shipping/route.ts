@@ -5,11 +5,12 @@ export async function GET() {
   const sb = await createSupabaseServerClient();
   const { data } = await sb
     .from("settings")
-    .select("shipping_fee_default, shipping_fee_remote")
+    .select("shipping_fee_default, shipping_fee_remote, free_shipping_threshold")
     .eq("id", 1)
     .maybeSingle();
   return NextResponse.json({
     default: data?.shipping_fee_default ?? 4000,
     remote: data?.shipping_fee_remote ?? 7000,
+    freeOver: data?.free_shipping_threshold ?? 0,
   });
 }

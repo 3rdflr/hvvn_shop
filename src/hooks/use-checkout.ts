@@ -47,10 +47,11 @@ export function useCheckout() {
     queryFn: getShippingFees,
     staleTime: 5 * 60 * 1000,
   });
-  const fees = feesQuery.data ?? { default: 4000, remote: 7000 };
+  const fees = feesQuery.data ?? { default: 4000, remote: 7000, freeOver: 0 };
 
   const remote = useMemo(() => isRemoteArea(form.shipping_postcode), [form.shipping_postcode]);
-  const shippingFee = remote ? fees.remote : fees.default;
+  const freeShipping = fees.freeOver > 0 && subtotal >= fees.freeOver;
+  const shippingFee = freeShipping ? 0 : remote ? fees.remote : fees.default;
   const total = subtotal + shippingFee;
 
   function setField(key: keyof CheckoutForm, value: string) {
@@ -93,6 +94,7 @@ export function useCheckout() {
     errors,
     remote,
     fees,
+    freeShipping,
     shippingFee,
     total,
     subtotal,

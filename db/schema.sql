@@ -13,6 +13,7 @@ create table if not exists public.settings (
   bank_account_holder text,
   shipping_fee_default integer not null default 4000,
   shipping_fee_remote integer not null default 7000,
+  free_shipping_threshold integer not null default 0, -- 0 = 사용 안 함, 그 외 금액 이상 무료배송
   about_html text,
   instagram_url text,
   contact_email text,
@@ -23,6 +24,7 @@ create table if not exists public.settings (
 insert into public.settings (id) values (1) on conflict do nothing;
 -- For existing DBs:
 alter table public.settings add column if not exists bg_youtube_url text;
+alter table public.settings add column if not exists free_shipping_threshold integer not null default 0;
 
 -- ---------- Products ----------
 create table if not exists public.products (

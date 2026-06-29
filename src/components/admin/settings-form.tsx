@@ -13,6 +13,7 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
     bank_account_holder: settings?.bank_account_holder ?? "",
     shipping_fee_default: settings?.shipping_fee_default ?? 4000,
     shipping_fee_remote: settings?.shipping_fee_remote ?? 7000,
+    free_shipping_threshold: settings?.free_shipping_threshold ?? 0,
     instagram_url: settings?.instagram_url ?? "",
     contact_email: settings?.contact_email ?? "",
     bg_youtube_url: settings?.bg_youtube_url ?? "",
@@ -35,6 +36,7 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
         bank_account_holder: form.bank_account_holder || null,
         shipping_fee_default: Number(form.shipping_fee_default) || 0,
         shipping_fee_remote: Number(form.shipping_fee_remote) || 0,
+        free_shipping_threshold: Number(form.free_shipping_threshold) || 0,
         instagram_url: form.instagram_url || null,
         contact_email: form.contact_email || null,
         bg_youtube_url: form.bg_youtube_url || null,
@@ -93,7 +95,20 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
               onChange={(e) => set("shipping_fee_remote", Number(e.target.value))}
             />
           </Field>
+          <Field label="무료배송 기준 금액 (0 = 사용 안 함)" className="col-span-2">
+            <input
+              className="input"
+              type="number"
+              min={0}
+              step={1000}
+              value={form.free_shipping_threshold}
+              onChange={(e) => set("free_shipping_threshold", Number(e.target.value))}
+            />
+          </Field>
         </div>
+        <p className="text-xs text-muted">
+          상품 합계가 이 금액 이상이면 배송비가 무료로 적용됩니다. 0이면 무료배송을 사용하지 않습니다.
+        </p>
       </section>
 
       <section className="space-y-5">

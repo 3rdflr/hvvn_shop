@@ -11,7 +11,7 @@ export function createOrder(input: CheckoutInput) {
   return postJSON<CreateOrderResponse, CheckoutInput>("/api/orders", input);
 }
 
-export type ShippingFees = { default: number; remote: number };
+export type ShippingFees = { default: number; remote: number; freeOver: number };
 export function getShippingFees() {
   return getJSON<ShippingFees>("/api/settings/shipping");
 }

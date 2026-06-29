@@ -58,6 +58,8 @@ export function BagSection({ onShopMore }: { onShopMore: () => void }) {
           total={c.total}
           remote={c.remote}
           remoteFee={c.fees.remote}
+          freeShipping={c.freeShipping}
+          freeOver={c.fees.freeOver}
           onShopMore={onShopMore}
         />
       </aside>
@@ -209,6 +211,8 @@ function OrderSummary({
   total,
   remote,
   remoteFee,
+  freeShipping,
+  freeOver,
   onShopMore,
 }: {
   subtotal: number;
@@ -216,9 +220,12 @@ function OrderSummary({
   total: number;
   remote: boolean;
   remoteFee: number;
+  freeShipping: boolean;
+  freeOver: number;
   onShopMore: () => void;
 }) {
   const lines = useCart((s) => s.lines);
+  const remaining = freeOver > 0 ? freeOver - subtotal : 0;
 
   return (
     <div className="flex w-full flex-col">
@@ -241,8 +248,17 @@ function OrderSummary({
 
       <dl className="flex w-full flex-col gap-1 border-y border-line py-3 text-[13px] uppercase">
         <Row label="Subtotal" value={formatKRW(subtotal)} />
-        <Row label="Shipping" value={formatKRW(shippingFee)} />
-        {remote && (
+        <Row label="Shipping" value={freeShipping ? "무료" : formatKRW(shippingFee)} />
+        {freeShipping ? (
+          <p className="text-[11px] text-chrome normal-case tracking-normal">무료배송 적용</p>
+        ) : (
+          remaining > 0 && (
+            <p className="text-[11px] text-muted normal-case tracking-normal">
+              {formatKRW(remaining)} 더 담으면 무료배송
+            </p>
+          )
+        )}
+        {remote && !freeShipping && (
           <p className="text-[11px] text-accent normal-case tracking-normal">
             제주/도서산간 +{formatKRW(remoteFee)}
           </p>

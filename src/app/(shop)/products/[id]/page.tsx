@@ -102,10 +102,9 @@ export default async function ProductDetailPage({
         {product.description_html && (
           <div className="mt-12">
             <div className="eyebrow mb-3">— Details</div>
-            <div
-              className="prose-store text-[14px]"
-              dangerouslySetInnerHTML={{ __html: product.description_html }}
-            />
+            <p className="text-[14px] leading-relaxed text-ink/90 whitespace-pre-wrap">
+              {product.description_html}
+            </p>
           </div>
         )}
       </div>
