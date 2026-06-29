@@ -36,10 +36,17 @@ create table if not exists public.products (
   is_published boolean not null default true,
   is_set boolean not null default false,
   thumbnail_url text,
+  sort_order integer not null default 0, -- admin-controlled display order (asc)
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 create index if not exists products_published_idx on public.products (is_published, created_at desc);
+create index if not exists products_sort_idx on public.products (sort_order, created_at desc);
+-- For existing DBs: add the column, then seed it from current creation order.
+alter table public.products add column if not exists sort_order integer not null default 0;
+update public.products p set sort_order = s.rn
+from (select id, row_number() over (order by created_at desc, id) - 1 as rn from public.products) s
+where p.id = s.id and p.sort_order = 0;
 
 create table if not exists public.product_images (
   id uuid primary key default gen_random_uuid(),

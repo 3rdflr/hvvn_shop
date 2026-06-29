@@ -11,6 +11,7 @@ export default async function HomePage() {
     .from("products")
     .select("*")
     .eq("is_published", true)
+    .order("sort_order", { ascending: true }) // admin-controlled order
     .order("created_at", { ascending: false })
     .order("id", { ascending: true }); // stable tiebreaker → no reshuffle on refresh
   if (error) {

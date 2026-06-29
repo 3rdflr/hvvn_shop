@@ -21,17 +21,20 @@ export function SiteHeader() {
   const headerLogo = "/images/hvvn_header.png";
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-40 transition-[background-color,border-color] duration-300",
-        scrolled
-          ? "border-b border-line bg-black/95 backdrop-blur-md"
-          : "border-b border-transparent bg-transparent backdrop-blur-0"
-      )}
-    >
-      {/* Height matches the original design (h-16 / md:h-12); the scroll fix only
-          swaps the background + border, so no empty translucent band at the top. */}
-      <div className="container-page h-16 md:h-12 grid grid-cols-[1fr_auto_1fr] items-center">
+    <header className="sticky top-0 z-40">
+      {/* Background as a separate opacity-faded layer (incl. its backdrop-blur and
+          hairline border) so scrolling up/down never snaps the bar in/out — the
+          old version toggled bg + blur instantly, which read as a seam at the top. */}
+      <div
+        aria-hidden
+        className={cn(
+          "absolute inset-0 border-b border-line bg-black/95 backdrop-blur-md transition-opacity duration-300 will-change-[opacity]",
+          scrolled ? "opacity-100" : "opacity-0",
+        )}
+      />
+
+      {/* Height matches the original design (h-16 / md:h-12). */}
+      <div className="container-page relative h-16 md:h-12 grid grid-cols-[1fr_auto_1fr] items-center">
         <div aria-hidden />
         <div className="flex justify-center overflow-visible">
           <Link href="/" aria-label="hvving home" className="flex items-center">

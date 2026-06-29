@@ -6,10 +6,23 @@ import { useSubscribeEmail } from "@/hooks/use-storefront-mutations";
 import { useUi } from "@/store/ui";
 
 const DISMISS_KEY = "hvvn-subscribe-dismissed";
+const DISMISS_TTL = 24 * 60 * 60 * 1000; // 24h — re-show after the window lapses
+
+/** True if the sheet should stay hidden: subscribed (permanent) or dismissed < 24h ago. */
+function isStillDismissed(): boolean {
+  const raw = localStorage.getItem(DISMISS_KEY);
+  if (!raw) return false;
+  if (raw === "subscribed") return true;
+  const ts = Number(raw);
+  if (Number.isFinite(ts) && Date.now() - ts < DISMISS_TTL) return true;
+  localStorage.removeItem(DISMISS_KEY); // expired → allow re-show
+  return false;
+}
 
 /**
  * Email-capture bottom sheet (YZY-style layout, site palette) shown after ~60%
- * scroll. Dismissed/subscribed state is remembered in localStorage.
+ * scroll. Closing remembers the dismissal for 24h; a successful subscribe is
+ * remembered permanently.
  */
 export function SubscribeModal() {
   const reached = useScrollDepth(0.6);
@@ -20,7 +33,7 @@ export function SubscribeModal() {
   const subscribe = useSubscribeEmail();
 
   useEffect(() => {
-    setDismissed(localStorage.getItem(DISMISS_KEY) === "1");
+    setDismissed(isStillDismissed());
   }, []);
 
   useEffect(() => {
@@ -37,13 +50,14 @@ export function SubscribeModal() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  function remember() {
-    localStorage.setItem(DISMISS_KEY, "1");
+  // persist=true → subscribed, kept permanently; otherwise a 24h dismissal stamp.
+  function remember(persist: boolean) {
+    localStorage.setItem(DISMISS_KEY, persist ? "subscribed" : String(Date.now()));
     setDismissed(true);
   }
 
   function dismiss() {
-    remember();
+    remember(false);
     setOpen(false);
   }
 
@@ -53,7 +67,7 @@ export function SubscribeModal() {
       { email, source: "modal" },
       {
         onSuccess: () => {
-          remember();
+          remember(true);
           setTimeout(() => setOpen(false), 1800);
         },
       }

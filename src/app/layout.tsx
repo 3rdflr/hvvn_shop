@@ -1,8 +1,47 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { Newsreader, Pirata_One, Kanchenjunga, Gowun_Dodum } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ConsoleSignature } from "@/components/layouts/console-signature";
+
+// Self-hosted via next/font to eliminate the first-load font flicker (FOUT)
+// that the previous Google Fonts <link> caused. Each font exposes a CSS
+// variable consumed by globals.css. Korean (Gowun Dodum) isn't preloaded — its
+// subset is large — but is still self-hosted with swap.
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+  variable: "--font-newsreader",
+  display: "swap",
+});
+const pirataOne = Pirata_One({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-pirata",
+  display: "swap",
+});
+const kanchenjunga = Kanchenjunga({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-kanchenjunga",
+  display: "swap",
+});
+const gowunDodum = Gowun_Dodum({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-gowun",
+  display: "swap",
+  preload: false,
+});
+
+const fontVars = [
+  newsreader.variable,
+  pirataOne.variable,
+  kanchenjunga.variable,
+  gowunDodum.variable,
+].join(" ");
 
 // Resolve the public site URL. On Vercel, NEXT_PUBLIC_SITE_URL may be unset —
 // fall back to the Vercel-provided domain so OG/Twitter images don't point at
@@ -54,13 +93,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,500;1,6..72,400&family=Pirata+One&family=Kanchenjunga&family=Gowun+Dodum&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="ko" className={fontVars}>
       <body>
         <QueryProvider>{children}</QueryProvider>
         <ConsoleSignature />

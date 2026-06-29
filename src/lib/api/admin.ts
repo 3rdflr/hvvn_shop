@@ -30,6 +30,10 @@ export function updateSettings(input: Record<string, unknown>) {
   return sendJSON<{ ok: true }>("/api/admin/settings", "PATCH", input);
 }
 
+export function reorderProducts(ids: string[]) {
+  return postJSON<{ ok: true }, { ids: string[] }>("/api/admin/products/reorder", { ids });
+}
+
 export function notifyRestock(id: string) {
   return postJSON<{ sent: number; total?: number; message?: string }, Record<string, never>>(
     `/api/admin/products/${id}/notify-restock`,
