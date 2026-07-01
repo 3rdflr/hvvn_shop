@@ -55,7 +55,6 @@ export function ProductActions({ product }: { product: Product }) {
             +
           </button>
         </div>
-        <span className="text-xs text-muted">재고 {product.stock}</span>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <button onClick={handleAdd} className="btn-outline">
